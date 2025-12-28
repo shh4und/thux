@@ -28,16 +28,18 @@ void init_list(list *l)
     l->head = NULL;
 }
 
-bool insert(item content, list *l)
+record *new_node(item content, record *next)
 {
     record *new = (record *)malloc(sizeof(record));
-    if (new == NULL)
-    {
-        return false;
-    }
     new->content = content;
-    new->next = l->head;
-    l->head = new;
+    new->next = next;
+    return new;
+}
+
+bool insert(item content, list *l)
+{
+    l->head = new_node(content, l->head);
+
     return true;
 }
 
@@ -107,7 +109,7 @@ bool remove_item(type_key key, list *l)
             record *p_curr = p_previous->next;
             if (p_curr->content.key == key)
             {
-                p_previous = p_curr->next;
+                p_previous->next = p_curr->next;
                 free(p_curr);
                 return true;
             }
@@ -157,24 +159,38 @@ bool nth_item(int n, item *content, list *l)
     return false;
 }
 
+void obliterate(list *l)
+{
+    record *curr = l->head;
+    while (curr)
+    {
+        record *next = curr->next;
+        free(curr);
+        curr = next;
+    }
+    l->head = NULL;
+}
+
 // recursive approach
-// void print_list_r(record *lst)
-// {
-//     if (lst != NULL)
-//     {
-//         printf("C%d:V%d\n", lst->content.key, lst->content.value);
-//         print_list_r(lst->next);
-//     }
-// }
-// // iterative approach
-// void print_list_i(record *lst)
-// {
-//     record *p;
-//     for (p = lst; p != NULL; p = p->next)
-//     {
-//         printf("%d\n", p->content);
-//     }
-// }
+void print_list_r(record *lst)
+{
+    if (lst != NULL)
+    {
+        printf("K%d : V%d\n", lst->content.key, lst->content.value);
+        print_list_r(lst->next);
+    }
+}
+// iterative approach
+void print_list_i(list *l)
+{
+    record *p = l->head;
+    printf("key:value\n");
+    while (p)
+    {
+        printf("%d:%d\n", p->content.key, p->content.value);
+        p = p->next;
+    }
+}
 
 int main(void)
 {
@@ -187,14 +203,27 @@ int main(void)
     for (int i = 1; i < 4; i++)
     {
         item content = {i, i * 5};
-        if (insert(content, &lst))
+        if (!(insert(content, &lst)))
         {
-            printf("Content added:\nK%d:V%d\n", content.key, content.value);
+            printf("It fails at inserting values.");
+            return EXIT_FAILURE;
         }
     }
 
+    if (remove_item(2, &lst))
+    {
+        printf("Item 2 removed\n");
+    }
+    else
+    {
+        printf("Fails at removing item 2\n");
+    }
+
     printf("ADDR: %p\n", &lst);
-    // print_list_r(lst);
     printf("COUNT: %d\n", size_list_i(&lst));
+
+    print_list_r(lst.head);
+
+    obliterate(&lst);
     return EXIT_SUCCESS;
 }
