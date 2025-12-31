@@ -14,8 +14,25 @@
 typedef struct Heap
 {
     int arr[ARR_SIZE];
+    size_t length;
     size_t heap_size;
 } Heap;
+
+void show_curr_state(Heap heap)
+{
+    printf("Estado Atual: ");
+    for (int i = 0; i < heap.length; i++)
+    {
+        if (i == heap.length - 1)
+        {
+            printf("%d\n", heap.arr[i]);
+        }
+        else
+        {
+            printf("%d | ", heap.arr[i]);
+        }
+    }
+}
 
 void swap(int *a, int *b)
 {
@@ -28,42 +45,40 @@ void max_heapify(Heap *heap, int i)
 {
     int left_child = LEFT(i);
     int right_child = RIGHT(i);
-    int largest;
-    if (left_child <= heap->heap_size && heap->arr[left_child] > heap->arr[i])
+    int largest = i;
+    if (left_child < heap->length && heap->arr[left_child] > heap->arr[i])
     {
+
         largest = left_child;
     }
-    else
+    if (right_child < heap->length && heap->arr[right_child] > heap->arr[largest])
     {
-        largest = i;
+        {
+            largest = right_child;
+        }
     }
-
-    if (right_child <= heap->heap_size && heap->arr[right_child] > heap->arr[largest])
-    {
-        largest = right_child;
-    }
-
     if (largest != i)
     {
-        swap(heap->arr[i], heap->arr[largest]);
+        swap(&heap->arr[i], &heap->arr[largest]);
         max_heapify(heap, largest);
+        // show_curr_state(*heap);
     }
 }
 
-void build_max_heap(Heap heap)
+void build_max_heap(Heap *heap)
 {
-    heap.heap_size = ARR_SIZE;
-    for (int i = ARR_SIZE / 2; i > 0; i++)
+    heap->heap_size = heap->length;
+    for (int i = (heap->length - 1) / 2; i >= 0; i--)
     {
-        max_heapify(&heap, i);
+        max_heapify(heap, i);
+        show_curr_state(*heap);
     }
 }
 
 int main()
 {
 
-    Heap heap;
-    heap.heap_size = ARR_SIZE;
+    Heap heap = {.length = ARR_SIZE};
 
     for (int i = 0; i < ARR_SIZE; i++)
     {
@@ -74,11 +89,34 @@ int main()
         }
     }
 
-    for (int i = 0; i < ARR_SIZE; i++)
+    printf("Estado inicial: ");
+    for (int i = 0; i < heap.length; i++)
     {
-        printf("%d | ", heap.arr[i]);
+        if (i == heap.length - 1)
+        {
+            printf("%d\n", heap.arr[i]);
+        }
+        else
+        {
+
+            printf("%d | ", heap.arr[i]);
+        }
     }
-    printf("\n\n");
+
+    build_max_heap(&heap);
+    printf("Resultado Final: ");
+    for (int i = 0; i < heap.length; i++)
+    {
+        if (i == heap.length - 1)
+        {
+            printf("%d\n", heap.arr[i]);
+        }
+        else
+        {
+
+            printf("%d | ", heap.arr[i]);
+        }
+    }
 
     return EXIT_SUCCESS;
 }
