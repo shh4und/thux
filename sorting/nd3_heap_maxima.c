@@ -19,9 +19,9 @@ typedef struct Heap
 
 void swap(int *a, int *b)
 {
-    int *tmp = a;
-    int a = b;
-    int b = tmp;
+    int tmp = *a;
+    *a = *b;
+    *b = tmp;
 }
 
 void max_heapify(Heap *heap, int i)
@@ -50,7 +50,7 @@ void max_heapify(Heap *heap, int i)
     }
 }
 
-void build_max_heap(Heap heap, int i)
+void build_max_heap(Heap heap)
 {
     heap.heap_size = ARR_SIZE;
     for (int i = ARR_SIZE / 2; i > 0; i++)
